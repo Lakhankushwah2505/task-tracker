@@ -43,7 +43,17 @@ function reducer(state, action) {
         },
       };
     case 'UPDATE_TASK':
-      return { ...state, tasks: state.tasks.map(t => t._id === action.payload._id ? action.payload : t) };
+      const updatedTasks = state.tasks.map(t => t._id === action.payload._id ? action.payload : t);
+      return {
+        ...state,
+        tasks: updatedTasks,
+        stats: {
+          total: updatedTasks.length,
+          done: updatedTasks.filter(t => t.status === 'done').length,
+          inProgress: updatedTasks.filter(t => t.status === 'in-progress').length,
+          highPriority: updatedTasks.filter(t => t.priority === 'high' && t.status !== 'done').length,
+        },
+      };
     case 'DELETE_TASK':
       const remainingTasks = state.tasks.filter(t => t._id !== action.payload);
       return {
