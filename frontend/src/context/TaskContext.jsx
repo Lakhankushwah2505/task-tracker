@@ -29,12 +29,33 @@ function reducer(state, action) {
           highPriority: tasks.filter(t => t.priority === 'high' && t.status !== 'done').length,
         },
       };
+
     case 'ADD_TASK':
-      return { ...state, tasks: [action.payload, ...state.tasks] };
+      const newTasks = [action.payload, ...state.tasks];
+      return {
+        ...state,
+        tasks: newTasks,
+        stats: {
+          total: newTasks.length,
+          done: newTasks.filter(t => t.status === 'done').length,
+          inProgress: newTasks.filter(t => t.status === 'in-progress').length,
+          highPriority: newTasks.filter(t => t.priority === 'high' && t.status !== 'done').length,
+        },
+      };
     case 'UPDATE_TASK':
       return { ...state, tasks: state.tasks.map(t => t._id === action.payload._id ? action.payload : t) };
     case 'DELETE_TASK':
-      return { ...state, tasks: state.tasks.filter(t => t._id !== action.payload) };
+      const remainingTasks = state.tasks.filter(t => t._id !== action.payload);
+      return {
+        ...state,
+        tasks: remainingTasks,
+        stats: {
+          total: remainingTasks.length,
+          done: remainingTasks.filter(t => t.status === 'done').length,
+          inProgress: remainingTasks.filter(t => t.status === 'in-progress').length,
+          highPriority: remainingTasks.filter(t => t.priority === 'high' && t.status !== 'done').length,
+        },
+      };
     case 'SET_FILTER':
       return { ...state, filters: { ...state.filters, ...action.payload } };
     default: return state;
